@@ -1,9 +1,9 @@
 Search AWMF Guideline Register
 ==============================================================================
 
-The (as of fall 2022) new [Guideline Register](https://register.awmf.org/) of the German medical societies' federation [AWMF](https://www.awmf.org/) has a novel search interface. At the time of writing this text it says that it is in beta state. 
+The (as of fall 2022) new [Guideline Register](https://register.awmf.org/) of the German medical societies' federation [AWMF](https://www.awmf.org/) has a novel search interface.
 
-The search capabilities are as yet limited (from an expert searchers point of view). Boolean Operators are not currently supported, nor are brackets (to be used in combination). Boolean operators supposedly are a thing to come in the future. There is no wildcard (such as \*) for truncation but according to a message "truncation ist done automatically". In my experience it is more a kind of linguistic lemmatization that is applied. Nouns and adjectives may ntot be not treated to be the same, according to my limited experience. See examples below.
+The search capabilities are as yet limited (from an expert searchers point of view). Boolean Operators are not currently supported, nor are brackets (to be used in combination). Boolean operators supposedly are a thing to come in the future. There is no wildcard (such as \*) for truncation but according to a message "truncation ist done automatically". In my experience it is more a kind of linguistic lemmatization that is applied. Nouns and adjectives may not be treated to be the same, according to my limited experience. See examples below.
 
 ## Search terms
 
@@ -24,13 +24,13 @@ Start a new project in OpenRefine. Paste the search terms from the clipboard or 
 
 ## Search using API
 
-The website is using an API that is requested by Ajax calls. We use that API to get nicely formatted JSON. URL pattern: <https://awmf-leitlinien.dev.howto.health/api/dev/search?sorting=relevance&limit=20&offset=0&api_key=MkI5Y1VIOEJ0ZGpoelNBVXRNM1E6WVFld0pBUF9RLVdJa012UHVPTmRQUQ==&lang=de?keywords=search_term>
+The website is using an API that is requested by Ajax calls. We use that API to get nicely formatted JSON. URL pattern: <https://leitlinien-api.awmf.org/v1/search?sorting=relevance&limit=20&offset=0&lang=de&api_key=MkI5Y1VIOEJ0ZGpoelNBVXRNM1E6WVFld0pBUF9RLVdJa012UHVPTmRQUQ==&keywords=search_term>
 
 Foreach of the following code blocks: In the left pane got to the _Undo / Redo_ tab, click the button _Apply..._, paste the code and click on _Perform operations_.
 
 OpenRefine code to carry out the searches:
 
-**Beware**: We just fetch the first **50 records** for each search (`limit` parameter in the query URL). You may need to adjust this value if result counts (see below) are higher than the limit.
+**Beware**: We just fetch the first **50 records** for each search (`limit` parameter in the query URL). You may need to adjust this value if result counts (see below) are higher than the limit. But be kind to the API! Use the `offset`and `limit`parameters with care!
 
 ```json
 
@@ -42,7 +42,7 @@ OpenRefine code to carry out the searches:
       "mode": "row-based"
     },
     "baseColumnName": "search_term",
-    "urlExpression": "grel:\"https://awmf-leitlinien.dev.howto.health/api/dev/search?sorting=relevance&limit=50&offset=0&api_key=MkI5Y1VIOEJ0ZGpoelNBVXRNM1E6WVFld0pBUF9RLVdJa012UHVPTmRQUQ==&lang=de&keywords=\" + value",
+    "urlExpression": "grel:\"https://leitlinien-api.awmf.org/v1/search?sorting=relevance&limit=50&offset=0&api_key=MkI5Y1VIOEJ0ZGpoelNBVXRNM1E6WVFld0pBUF9RLVdJa012UHVPTmRQUQ==&lang=de&keywords=\" + value",
     "onError": "set-to-blank",
     "newColumnName": "search_result_json",
     "columnInsertIndex": 1,
@@ -62,7 +62,7 @@ OpenRefine code to carry out the searches:
         "value": "*/*"
       }
     ],
-    "description": "Create column search_result_json at index 1 by fetching URLs based on column search_term using expression grel:\"https://awmf-leitlinien.dev.howto.health/api/dev/search?sorting=relevance&limit=50&offset=0&api_key=MkI5Y1VIOEJ0ZGpoelNBVXRNM1E6WVFld0pBUF9RLVdJa012UHVPTmRQUQ==&lang=de&keywords=\" + value"
+    "description": "Create column search_result_json at index 1 by fetching URLs based on column search_term using expression grel:\"https://leitlinien-api.awmf.org/v1/search?sorting=relevance&limit=50&offset=0&api_key=MkI5Y1VIOEJ0ZGpoelNBVXRNM1E6WVFld0pBUF9RLVdJa012UHVPTmRQUQ==&lang=de&keywords=\" + value"
   }
 ]
 
@@ -100,6 +100,8 @@ Use the Custom Tabular Exporter to export to a tsv-file:
 
 ![Export options: Content](media/AWMF/export_search_history_01.png)
 ![Export options: Download](media/AWMF/export_search_history_02.png)
+
+You can paste this [option code](data/AWMF/AWMF_custom_tabular_export_search_history_option_code.json) in the corresponding tab of the Custom Tabular Exporter to use these settings.
 
 Here is our [search history](data/AWMF/AWMF_Guideline_Register_search-history.tsv).
 

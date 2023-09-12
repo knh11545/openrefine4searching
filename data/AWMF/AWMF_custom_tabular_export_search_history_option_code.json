@@ -1,0 +1,37 @@
+{
+  "format": "tsv",
+  "separator": "\t",
+  "lineSeparator": "\n",
+  "encoding": "UTF-8",
+  "quoteAll": true,
+  "outputColumnHeaders": true,
+  "outputBlankRows": false,
+  "columns": [
+    {
+      "name": "search_term",
+      "reconSettings": {
+        "output": "entity-name",
+        "blankUnmatchedCells": false,
+        "linkToEntityPages": true
+      },
+      "dateSettings": {
+        "format": "iso-8601",
+        "useLocalTimeZone": false,
+        "omitTime": false
+      }
+    },
+    {
+      "name": "result_count",
+      "reconSettings": {
+        "output": "entity-name",
+        "blankUnmatchedCells": false,
+        "linkToEntityPages": true
+      },
+      "dateSettings": {
+        "format": "iso-8601",
+        "useLocalTimeZone": false,
+        "omitTime": false
+      }
+    }
+  ]
+}
