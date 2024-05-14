@@ -8,7 +8,10 @@ Issues with the Epistemonikos search platform tackled here:
 
 * The URL shown in the browser is not a reliable reflection of what is going on in the web page or what is being searched and may be misleading.
 
-* For title-and-abstract searches the search form acts differently from what is usually done in other interfaces. This may deviate from the intention of a searcher:
+* For title-and-abstract searches the search form acts differently from what is usually done in other interfaces. This may deviate from the intention of a searcher.
+
+
+## Title/Abstract searches
 
 Entering a search string `block_1 AND block_2` in the _Title/Abstract_ field of the advanced search form is translated into a search string `(title:(block_1 AND block_2) OR abstract:(block_1 AND block_2))`. This will not find records where _block_1_ terms occur in the title field and _block_2_ terms in the abstract field only. And vice versa. This may come unexpected.
 
@@ -20,7 +23,20 @@ AND
 (title:(block_2) OR abstract:(block_2))
 ```
 
-A concrete example (but not a particularly good search string):
+To give a concrete example, we search for:
+
+* Population: cancer
+* Intervention: surgery
+
+When entering a (not particularly good) search string) we get the following in the Epistemonikos advanced search form:
+
+![Screenshot of advanced search with title/abstract search](media/Epistemonikos/Epistemonikos_screenshot_TIAB_search.png)
+
+* String entered in Titel/Abstract field: `(cancer OR carcinoma) AND (surgery OR surgical)`
+* String shown in query box: `(title:((cancer OR carcinoma) AND (surgery OR surgical)) OR abstract:((cancer OR carcinoma) AND (surgery OR surgical)))`
+
+The structure of this search as illustrated with 
+
 
 ```
 (title:(cancer OR carcinoma) OR abstract:(cancer OR carcinoma))
@@ -37,7 +53,7 @@ TODO: Add link to API documentation: <https://api.epistemonikos.org>
 
 API used by the Advanced search form:
 
-https://www.epistemonikos.org/en/api/documents?classification=all&countries=all&page=1&pmc=all&protocol=no&q=(title:((+%22dental+crown%22+OR+%22oral+crown%22+OR+%22tooth+crown%22+OR+%22dental+crowns%22+OR+%22oral+crowns%22+OR+%22tooth+crowns%22+OR+((dental+OR+oral+OR+tooth)+AND+(implant+OR+abutment))+OR+veneer+OR+%22dental+laminate%22+OR+restoration*+OR+onlay*+OR+inlay*+OR+overlay*+OR+partialcrown*+OR+tabletop+OR+%22partial+crown%22+OR+%22partial+crowns%22+OR+%22fixed+partial+denture%22+OR+%22fixed+partial+dentures%22+OR+%22fixed+dental+prosthesis%22+OR+%22fixed+dental+prostheses%22+OR+%22dental+bridge%22+OR+%22tooth+bridge%22+OR+%22fixed+bridge%22+OR+%22resin+bridge%22+OR+%22maryland+bridge%22+OR+%22rochette+bridge%22+OR+%22dental+bridges%22+OR+%22tooth+bridges%22+OR+%22fixed+bridges%22+OR+%22resin+bridges%22+OR+%22maryland+bridges%22+OR+%22rochette+bridges%22+OR+%22dental+pontic%22+OR+%22tooth+pontic%22+OR+%22fixed+pontic%22+OR+%22resin+pontic%22+OR+%22maryland+pontic%22+OR+%22rochette+pontic%22+OR+%22dental+pontics%22+OR+%22tooth+pontics%22+OR+%22fixed+pontics%22+OR+%22resin+pontics%22+OR+%22maryland+pontics%22+OR+%22rochette+pontics%22+OR+(prosthodontic+AND+%22fixed+restoration%22)+OR+(prosthodontic+AND+%22fixed+restorations%22)+OR+%22monolithic+restoration%22+OR+%22anatomic+restoration%22+OR+%22monolithic+restorations%22+OR+%22anatomic+restorations%22+OR+((FPD++OR+FPDs+OR+FDP+OR+FDPs)+AND+(dental+OR+tooth))+)+AND+(+ceramic+OR+ceramics+OR+allceramic+OR+porcelain+OR+lithia+OR+lithium+OR+silicate+OR+silicates+OR+disilicate+OR+disilicates+OR+LiSi+OR+LiAlSi+OR+Li2Si2O5+OR+metal-free+OR+metalfree+OR+non-metal+OR+nonmetal+OR+%22e-max%22+OR+emax+OR+celtra+OR+tessera+OR+suprinity+OR+zls+OR+empress2+OR+%22empress+2%22+OR+amber+OR+livento+OR+conceptpress+OR+%22concept+press%22+OR+vintage+OR+nice+OR+%22n+ce%22+))+OR+abstract:((+%22dental+crown%22+OR+%22oral+crown%22+OR+%22tooth+crown%22+OR+%22dental+crowns%22+OR+%22oral+crowns%22+OR+%22tooth+crowns%22+OR+((dental+OR+oral+OR+tooth)+AND+(implant+OR+abutment))+OR+veneer+OR+%22dental+laminate%22+OR+restoration*+OR+onlay*+OR+inlay*+OR+overlay*+OR+partialcrown*+OR+tabletop+OR+%22partial+crown%22+OR+%22partial+crowns%22+OR+%22fixed+partial+denture%22+OR+%22fixed+partial+dentures%22+OR+%22fixed+dental+prosthesis%22+OR+%22fixed+dental+prostheses%22+OR+%22dental+bridge%22+OR+%22tooth+bridge%22+OR+%22fixed+bridge%22+OR+%22resin+bridge%22+OR+%22maryland+bridge%22+OR+%22rochette+bridge%22+OR+%22dental+bridges%22+OR+%22tooth+bridges%22+OR+%22fixed+bridges%22+OR+%22resin+bridges%22+OR+%22maryland+bridges%22+OR+%22rochette+bridges%22+OR+%22dental+pontic%22+OR+%22tooth+pontic%22+OR+%22fixed+pontic%22+OR+%22resin+pontic%22+OR+%22maryland+pontic%22+OR+%22rochette+pontic%22+OR+%22dental+pontics%22+OR+%22tooth+pontics%22+OR+%22fixed+pontics%22+OR+%22resin+pontics%22+OR+%22maryland+pontics%22+OR+%22rochette+pontics%22+OR+(prosthodontic+AND+%22fixed+restoration%22)+OR+(prosthodontic+AND+%22fixed+restorations%22)+OR+%22monolithic+restoration%22+OR+%22anatomic+restoration%22+OR+%22monolithic+restorations%22+OR+%22anatomic+restorations%22+OR+((FPD++OR+FPDs+OR+FDP+OR+FDPs)+AND+(dental+OR+tooth))+)+AND+(+ceramic+OR+ceramics+OR+allceramic+OR+porcelain+OR+lithia+OR+lithium+OR+silicate+OR+silicates+OR+disilicate+OR+disilicates+OR+LiSi+OR+LiAlSi+OR+Li2Si2O5+OR+metal-free+OR+metalfree+OR+non-metal+OR+nonmetal+OR+%22e-max%22+OR+emax+OR+celtra+OR+tessera+OR+suprinity+OR+zls+OR+empress2+OR+%22empress+2%22+OR+amber+OR+livento+OR+conceptpress+OR+%22concept+press%22+OR+vintage+OR+nice+OR+%22n+ce%22+)))&query=(title:((cancer+OR+carcinoma)+AND+(surgery+OR+surgical))+OR+abstract:((cancer+OR+carcinoma)+AND+(surgery+OR+surgical)))&study_design=all&systematic_review_type=all&type_of_meta_analysis=all
+https://www.epistemonikos.org/en/api/documents?classification=all&countries=all&page=1&pmc=all&protocol=no&q=(title:((cancer+OR+carcinoma)+AND+(surgery+OR+surgical))+OR+abstract:((cancer+OR+carcinoma)+AND+(surgery+OR+surgical)))&query=&study_design=all&systematic_review_type=all&type_of_meta_analysis=all
 
 The URL parameter `q` apparently has no influence on the actual search. The web app may carry over previous search strings in this parameter. We will leave it empty so as not to cause confusion.
 
@@ -45,6 +61,19 @@ The URL parameter `query` is the actual search string.
 
 
 The other parameters are filters and for paging the result list.
+
+
+### RIS download
+
+In an example search the following URL was used by the web page to download results in RIS format: <https://www.epistemonikos.org/en/documents/documents_ris?classification=all&countries=all&pmc=all&protocol=no&q=&query=(title:(cancer OR carcinoma) OR abstract:(cancer OR carcinoma)) AND (title:(surgery OR surgical) OR abstract:(surgery OR surgical)) AND (title:(immunology) OR abstract:(immunology))&size=100&study_design=all&systematic_review_type=all&type_of_meta_analysis=all>
+
+Result comes in a JSON document. In the web page only up to 100 records in RIS format are offered for download without registration. More are possible after login. But the size parameter in this URL allows for larger numbers. After login the web page offers to download up to 1000, 5000 or 10000 records, although in a somwewhat different fashion. There seems to be no paging with this URL. So be careful not to send a request to this endpoint with a query that yields too many records! We do not want to put Epistemonikos under stress.
+
+The URL such that the search string can be appended (in URL encoded form):
+
+```
+https://www.epistemonikos.org/en/documents/documents_ris?classification=all&countries=all&pmc=all&protocol=no&study_design=all&systematic_review_type=all&type_of_meta_analysis=all&q=&size=100&query=
+```
 
 
 ## Using OpenRefine
@@ -458,4 +487,104 @@ TODO but easy
 ## Discussion
 
 Pros and cons of this approach
+
+
+## Direct RIS download
+
+### Export search history
+
+Use the custom tabular exporter. Apply the following "Option code". Then go to the "Download" tab and click the "Download" button.
+
+```json
+
+{
+  "format": "tsv",
+  "separator": "\t",
+  "lineSeparator": "\n",
+  "encoding": "UTF-8",
+  "quoteAll": true,
+  "outputColumnHeaders": true,
+  "outputBlankRows": false,
+  "columns": [
+    {
+      "name": "search_string",
+      "reconSettings": {
+        "output": "entity-name",
+        "blankUnmatchedCells": false,
+        "linkToEntityPages": true
+      },
+      "dateSettings": {
+        "format": "iso-8601",
+        "useLocalTimeZone": false,
+        "omitTime": false
+      }
+    },
+    {
+      "name": "ris_download_url",
+      "reconSettings": {
+        "output": "entity-name",
+        "blankUnmatchedCells": false,
+        "linkToEntityPages": true
+      },
+      "dateSettings": {
+        "format": "iso-8601",
+        "useLocalTimeZone": false,
+        "omitTime": false
+      }
+    },
+    {
+      "name": "total_results",
+      "reconSettings": {
+        "output": "entity-name",
+        "blankUnmatchedCells": false,
+        "linkToEntityPages": true
+      },
+      "dateSettings": {
+        "format": "iso-8601",
+        "useLocalTimeZone": false,
+        "omitTime": false
+      }
+    },
+    {
+      "name": "first_search_status",
+      "reconSettings": {
+        "output": "entity-name",
+        "blankUnmatchedCells": false,
+        "linkToEntityPages": true
+      },
+      "dateSettings": {
+        "format": "iso-8601",
+        "useLocalTimeZone": false,
+        "omitTime": false
+      }
+    },
+    {
+      "name": "search_url",
+      "reconSettings": {
+        "output": "entity-name",
+        "blankUnmatchedCells": false,
+        "linkToEntityPages": true
+      },
+      "dateSettings": {
+        "format": "iso-8601",
+        "useLocalTimeZone": false,
+        "omitTime": false
+      }
+    }
+  ]
+}
+
+```
+
+
+### Export to RIS file
+
+Results are in the column `ris`. We export with the templatiing exporter. This is "Row template":
+
+```
+{{cells["ris"].value}}
+```
+
+"Prefix", "Row separator" and "Suffix" must be empty.
+
 
