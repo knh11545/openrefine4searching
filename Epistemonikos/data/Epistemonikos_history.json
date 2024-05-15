@@ -1,0 +1,173 @@
+[
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "block_1",
+    "expression": "grel:forEach(\n  row.columnNames, \n  v, \n  \"(title:(\" + cells[v].value + \") OR abstract:(\" + cells[v].value + \"))\"\n).join(\" AND \")",
+    "onError": "set-to-blank",
+    "newColumnName": "search_string",
+    "columnInsertIndex": 1,
+    "description": "Create column search_string at index 1 based on column block_1 using expression grel:forEach(\n  row.columnNames, \n  v, \n  \"(title:(\" + cells[v].value + \") OR abstract:(\" + cells[v].value + \"))\"\n).join(\" AND \")"
+  },
+  {
+    "op": "core/column-move",
+    "columnName": "search_string",
+    "index": 0,
+    "description": "Move column search_string to position 0"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "search_string",
+    "expression": "grel:\"https://www.epistemonikos.org/en/api/documents?classification=all&countries=all&pmc=all&study_design=all&systematic_review_type=all&type_of_meta_analysis=all&protocol=no&q=\" +\n\"&page=1\" +\n\"&query=\" + escape(value, \"url\")",
+    "onError": "set-to-blank",
+    "newColumnName": "search_url",
+    "columnInsertIndex": 1,
+    "description": "Create column search_url at index 1 based on column search_string using expression grel:\"https://www.epistemonikos.org/en/api/documents?classification=all&countries=all&pmc=all&study_design=all&systematic_review_type=all&type_of_meta_analysis=all&protocol=no&q=\" +\n\"&page=1\" +\n\"&query=\" + escape(value, \"url\")"
+  },
+  {
+    "op": "core/column-addition-by-fetching-urls",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "search_url",
+    "urlExpression": "grel:value",
+    "onError": "set-to-blank",
+    "newColumnName": "first_search",
+    "columnInsertIndex": 2,
+    "delay": 500,
+    "cacheResponses": true,
+    "httpHeadersJson": [
+      {
+        "name": "authorization",
+        "value": ""
+      },
+      {
+        "name": "user-agent",
+        "value": "OpenRefine 3.7.4 [05e9de9]"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      }
+    ],
+    "description": "Create column first_search at index 2 by fetching URLs based on column search_url using expression grel:value"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "first_search",
+    "expression": "grel:value.parseJson().total_results",
+    "onError": "set-to-blank",
+    "newColumnName": "total_results",
+    "columnInsertIndex": 1,
+    "description": "Create column total_results at index 1 based on column first_search using expression grel:value.parseJson().total_results"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "first_search",
+    "expression": "grel:value.parseJson().search_status",
+    "onError": "set-to-blank",
+    "newColumnName": "first_search_status",
+    "columnInsertIndex": 2,
+    "description": "Create column first_search_status at index 2 based on column first_search using expression grel:value.parseJson().search_status"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "search_url",
+    "expression": "grel:if (\n  cells[\"total_results\"].value <= 10000,\n  \"https://www.epistemonikos.org/en/documents/documents_ris?classification=all&countries=all&pmc=all&protocol=no&study_design=all&systematic_review_type=all&type_of_meta_analysis=all&q=\"\n  + \"&size=\" + cells[\"total_results\"].value.escape(\"url\")\n  + \"&query=\" + cells[\"search_string\"].value.escape(\"url\"),\n  \"ERROR: total_results is larger than allowed!\"\n)",
+    "onError": "set-to-blank",
+    "newColumnName": "ris_download_url",
+    "columnInsertIndex": 4,
+    "description": "Create column ris_download_url at index 4 based on column search_url using expression grel:if (\n  cells[\"total_results\"].value <= 10000,\n  \"https://www.epistemonikos.org/en/documents/documents_ris?classification=all&countries=all&pmc=all&protocol=no&study_design=all&systematic_review_type=all&type_of_meta_analysis=all&q=\"\n  + \"&size=\" + cells[\"total_results\"].value.escape(\"url\")\n  + \"&query=\" + cells[\"search_string\"].value.escape(\"url\"),\n  \"ERROR: total_results is larger than allowed!\"\n)"
+  },
+  {
+    "op": "core/column-addition-by-fetching-urls",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "ris_download_url",
+    "urlExpression": "grel:value",
+    "onError": "set-to-blank",
+    "newColumnName": "ris_json",
+    "columnInsertIndex": 5,
+    "delay": 500,
+    "cacheResponses": true,
+    "httpHeadersJson": [
+      {
+        "name": "authorization",
+        "value": ""
+      },
+      {
+        "name": "if-modified-since",
+        "value": ""
+      },
+      {
+        "name": "accept-language",
+        "value": ""
+      },
+      {
+        "name": "accept-encoding",
+        "value": ""
+      },
+      {
+        "name": "user-agent",
+        "value": "OpenRefine 3.8.0 [TRUNK]"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-charset",
+        "value": ""
+      }
+    ],
+    "description": "Create column ris_json at index 5 by fetching URLs based on column ris_download_url using expression grel:value"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "ris_json",
+    "expression": "grel:value.parseJson().ris_content.join(\"\\n\\n\")",
+    "onError": "set-to-blank",
+    "newColumnName": "ris",
+    "columnInsertIndex": 6,
+    "description": "Create column ris at index 6 based on column ris_json using expression grel:value.parseJson().ris_content.join(\"\\n\\n\")"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "ris_json",
+    "expression": "grel:value.parseJson().ris_content.length()",
+    "onError": "set-to-blank",
+    "newColumnName": "count_ris_records",
+    "columnInsertIndex": 6,
+    "description": "Create column count_ris_records at index 6 based on column ris_json using expression grel:value.parseJson().ris_content.length()"
+  }
+]
