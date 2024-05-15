@@ -28,15 +28,22 @@ To give a concrete example, we search for:
 * Population: cancer
 * Intervention: surgery
 
-When entering a (not particularly good) search string) we get the following in the Epistemonikos advanced search form:
+When entering a (not particularly good) search string as a single line we get the following in the Epistemonikos advanced search form:
 
-![Screenshot of advanced search with title/abstract search](media/Epistemonikos/Epistemonikos_screenshot_TIAB_search.png)
+![Screenshot of advanced search with title/abstract search](media/Epistemonikos_screenshot_TIAB_search.png)
 
 * String entered in Titel/Abstract field: `(cancer OR carcinoma) AND (surgery OR surgical)`
 * String shown in query box: `(title:((cancer OR carcinoma) AND (surgery OR surgical)) OR abstract:((cancer OR carcinoma) AND (surgery OR surgical)))`
 
-The structure of this search as illustrated with 
+The structure of this search as illustrated with [2Dsearch](https://app.2dsearch.com/):
 
+![Epistemonikos default single-line title/abstract search](media/Epistemonikos_default_TIAB_search_2Dsearch.png)
+
+When the term `cancer` is present in the title and the term `surgery` in the abstract only in a document this document would not be found.
+
+The structure of the title/abstract search "Population AND Intervention" should rather be like this:
+
+![Structure of title/abstract search "Population AND Intervention"](media/Population_AND_Intervention.png)
 
 ```
 (title:(cancer OR carcinoma) OR abstract:(cancer OR carcinoma))
