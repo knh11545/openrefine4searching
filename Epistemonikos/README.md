@@ -1,14 +1,15 @@
 Epistemonikos
 ==============================================================================
 
-
-Issues with the Epistemonikos search platform tackled here:
+Issues with the Epistemonikos search platform  that I experienced:
 
 * The Epistemonikos website handles query strings entered in unpredictable ways. Sometimes unwanted field codes are added to the search strings. This may corrupt the search but possibly go unnoticed. Various forms of a search string may be shown in the search forms. It is not always obvious what is actually searched.
 
 * The URL shown in the browser is not a reliable reflection of what is going on in the web page or what is being searched and may be misleading.
 
 * For title-and-abstract searches the search form acts differently from what is usually done in other interfaces. This may deviate from the intention of a searcher.
+
+We try to tackle these with the help of OpenRefine.
 
 
 ## Title/Abstract searches
@@ -39,11 +40,9 @@ The structure of this search as illustrated with [2Dsearch](https://app.2dsearch
 
 ![Epistemonikos default single-line title/abstract search](media/Epistemonikos_default_TIAB_search_2Dsearch.png)
 
-When the term `cancer` is present in the title and the term `surgery` in the abstract only in a document this document would not be found.
+When the term `cancer` is present only in the title and the term `surgery` only in the abstract of a document this document would not be found.
 
 The structure of the title/abstract search "Population AND Intervention" should rather be like this:
-
-![Structure of title/abstract search "Population AND Intervention"](media/Population_AND_Intervention.png)
 
 ```
 (title:(cancer OR carcinoma) OR abstract:(cancer OR carcinoma))
@@ -51,12 +50,16 @@ AND
 (title:(surgery OR surgical) OR abstract:(surgery OR surgical))
 ```
 
+![Structure of title/abstract search "Population AND Intervention"](media/Population_AND_Intervention.png)
+
 
 ## The Epistemonikos website
 
 TODO: This paragraph is still a messy collection of things. Rework!
 
-TODO: Add link to API documentation: <https://api.epistemonikos.org>
+Epistemonikos has a [documented API](https://api.epistemonikos.org). Access requires a registration process with the people from Epistemonikos. It is not clear who will be allowed access. Is is nor documented whether searching fpr documents with this API is the same as when searching in the web forms.
+
+However, the Advanced Search form also uses a (different) API for it to function. JavaScript code running in the browser is calling this API to do the searching. This can be seen when using the developer tools of the web browser. We can call this publicly available API with OpenRefine rather than with the JavaScripr code in the browser. Then we know exactly what search string we are sending.
 
 API used by the Advanced search form:
 
@@ -127,6 +130,10 @@ I found it convenient to prepare the search strings **without field codes** in a
 
 This [Excel file](data/Epistemonikos/Epistemonikos_search_blocks.xlsx) can be loaded into OpenRefine.
 
+This is what the imported search strategy looks like in OpenRefine:
+
+![Search strategy imported](media/search_strategy_imported.png)
+
 In OpenRefine the search string is constructed with the following GREL expression. It is possible to have as search blocks/columns as suits the need. They will all be combined with AND in the final search string. Terms from each search block may occur in either title or abstract or both. 
 
 ```grel
@@ -168,6 +175,7 @@ The operation history JSON to be applied in OpenRefine:
 ]
 
 ```
+
 
 #### Search using API
 
@@ -276,7 +284,7 @@ First we extract the result count from the JSON. In addition, a field _search_st
 
 At this stage it is convenient to export a search history from OpenRefine, e.g. search terms and their record counts. 
 
-Use the Custom Tabular Exporter to export to a tsv-file. Use the following option code for the _Custom tabular exporter_ to export the search strategy (columns _search_string, _total_results_, _first_search_status_ and _search_url_) as a tsv file. Paste this code into the _Option code_ tab and click on _Apply_:
+Use the Custom Tabular Exporter to export to a tsv-file. Use the following option code for the _Custom tabular exporter_ to export the search strategy (columns _search_string, _total_results_, _first_search_status_ and _search_url_) as a tsv file. Paste this code into the _Option code_ tab and click on _Apply_. Then go to the _Download_ tab and click on the _Download_ button.
 
 ```json
 
@@ -351,7 +359,7 @@ The search history as exported to a [tsv-file](data/Epistemonikos/Epistemonikos-
 
 ### Fetch all records
 
-The records are availbale in chunks of 10 as paged on the website. So we need to download these chunks one after the other.
+The records are available in chunks of 10 as paged on the website. So we need to download these chunks one after the other.
 
 We create a row for every results set page, build the URL to download and then fetch the JSON from that URL.
 
@@ -413,7 +421,16 @@ The option code JSON to be applied:
     "newColumnName": "download_url",
     "columnInsertIndex": 3,
     "description": "Create column download_url at index 3 based on column result_set_page using expression grel:\"https://www.epistemonikos.org/en/api/documents?classification=all&countries=all&pmc=all&study_design=all&systematic_review_type=all&type_of_meta_analysis=all&protocol=no&q=\" +\n\"&page=\" + cells[\"result_set_page\"].value +\n\"&query=\" + escape(cells[\"search_string\"].value, \"url\")"
-  },
+  }
+]
+
+```
+
+Now that we have the download URLs created we go and fetch the data:
+
+```json
+
+[
   {
     "op": "core/column-addition-by-fetching-urls",
     "engineConfig": {
