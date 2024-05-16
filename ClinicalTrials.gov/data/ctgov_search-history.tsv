@@ -1,0 +1,2 @@
+query.cond	query.intr	query_url	result_count
+sinus cancer	surgery	https://clinicaltrials.gov/api/v2/studies?pageSize=1000&countTotal=true&query.cond=sinus+cancer&query.intr=surgery	147
