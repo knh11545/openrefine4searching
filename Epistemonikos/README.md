@@ -63,7 +63,7 @@ We can call this publicly available API with OpenRefine rather than with the Jav
 
 The API used by the Advanced search form with an example search string. A [JSON](https://en.wikipedia.org/wiki/JSON)-formatted text document with the first 10 records and the total number of records matching the query is returned:
 
-<https://www.epistemonikos.org/en/api/documents?classification=all&countries=all&pmc=all&study_design=all&systematic_review_type=all&type_of_meta_analysis=all&protocol=no&q=&page=1&query=%28title%3A%28cancer+OR+carcinoma%29+OR+abstract%3A%28cancer+OR+carcinoma%29%29+AND+%28title%3A%28surgery+OR+surgical%29+OR+abstract%3A%28surgery+OR+surgical%29%29+AND+%28title%3A%28immunology%29+OR+abstract%3A%28immunology%29%29>
+<https://www.epistemonikos.org/en/api/documents?classification=all&countries=all&pmc=all&study_design=all&systematic_review_type=all&type_of_meta_analysis=all&protocol=no&q=&page=1&query=%28title%3A%28cancer%20OR%20carcinoma%29%20OR%20abstract%3A%28cancer%20OR%20carcinoma%29%29%20AND%20%28title%3A%28surgery%20OR%20surgical%29%20OR%20abstract%3A%28surgery%20OR%20surgical%29%29%20AND%20%28title%3A%28immunology%29%20OR%20abstract%3A%28immunology%29%29>
 
 The URL parameter `q` apparently has no influence on the actual search. The web app running in the browser may carry over previous search strings in this parameter. Apparently, this can end up in a different search strategy shown in the web page from that actually being searched. We will leave this parameter `q` empty so as not to cause confusion.
 
