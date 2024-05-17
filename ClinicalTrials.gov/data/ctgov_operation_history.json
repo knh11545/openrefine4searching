@@ -1,0 +1,153 @@
+[
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "query.cond",
+    "expression": "grel:\"https://clinicaltrials.gov/api/v2/studies?\" +\n\"pageSize=1000&\" +\n\"countTotal=true&\" +\nforEach(\n  row.columnNames,\n  cn,\n  cn + \"=\" + cells[cn].value.toString().strip().escape(\"url\")\n).join(\"&\")",
+    "onError": "set-to-blank",
+    "newColumnName": "query_url",
+    "columnInsertIndex": 1,
+    "description": "Create column query_url at index 1 based on column query.cond using expression grel:\"https://clinicaltrials.gov/api/v2/studies?\" +\n\"pageSize=1000&\" +\n\"countTotal=true&\" +\nforEach(\n  row.columnNames,\n  cn,\n  cn + \"=\" + cells[cn].value.toString().strip().escape(\"url\")\n).join(\"&\")"
+  },
+  {
+    "op": "core/column-move",
+    "columnName": "query_url",
+    "index": 2,
+    "description": "Move column query_url to position 2"
+  },
+  {
+    "op": "core/column-addition-by-fetching-urls",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "query_url",
+    "urlExpression": "grel:value",
+    "onError": "set-to-blank",
+    "newColumnName": "query_result",
+    "columnInsertIndex": 3,
+    "delay": 500,
+    "cacheResponses": true,
+    "httpHeadersJson": [
+      {
+        "name": "authorization",
+        "value": ""
+      },
+      {
+        "name": "if-modified-since",
+        "value": ""
+      },
+      {
+        "name": "accept-language",
+        "value": ""
+      },
+      {
+        "name": "accept-encoding",
+        "value": ""
+      },
+      {
+        "name": "user-agent",
+        "value": "OpenRefine 3.8.0 [TRUNK]"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      },
+      {
+        "name": "accept-charset",
+        "value": ""
+      }
+    ],
+    "description": "Create column query_result at index 3 by fetching URLs based on column query_url using expression grel:value"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "query_result",
+    "expression": "grel:value.parseJson().totalCount",
+    "onError": "set-to-blank",
+    "newColumnName": "result_count",
+    "columnInsertIndex": 4,
+    "description": "Create column result_count at index 4 based on column query_result using expression grel:value.parseJson().totalCount"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "record-based"
+    },
+    "baseColumnName": "query_result",
+    "expression": "grel:value.parseJson().studies.join(\"|||DOCUMENT_SEPARATOR|||\")",
+    "onError": "set-to-blank",
+    "newColumnName": "study_json",
+    "columnInsertIndex": 4,
+    "description": "Create column study_json at index 4 based on column query_result using expression grel:value.parseJson().studies.join(\"|||DOCUMENT_SEPARATOR|||\")"
+  },
+  {
+    "op": "core/multivalued-cell-split",
+    "columnName": "study_json",
+    "keyColumnName": "query.cond",
+    "mode": "separator",
+    "separator": "|||DOCUMENT_SEPARATOR|||",
+    "regex": false,
+    "description": "Split multi-valued cells in column study_json"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "study_json",
+    "expression": "grel:value.parseJson().protocolSection.identificationModule.nctId",
+    "onError": "set-to-blank",
+    "newColumnName": "accession_number",
+    "columnInsertIndex": 5,
+    "description": "Create column accession_number at index 5 based on column study_json using expression grel:value.parseJson().protocolSection.identificationModule.nctId"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "study_json",
+    "expression": "grel:if (\n  value.parseJson().protocolSection.identificationModule.officialTitle.length() > 0,\n  value.parseJson().protocolSection.identificationModule.officialTitle.replace(\"\\n\", \"\\\\n\"),\n  value.parseJson().protocolSection.identificationModule.briefTitle.replace(\"\\n\", \"\\\\n\")\n)",
+    "onError": "set-to-blank",
+    "newColumnName": "title",
+    "columnInsertIndex": 5,
+    "description": "Create column title at index 5 based on column study_json using expression grel:if (\n  value.parseJson().protocolSection.identificationModule.officialTitle.length() > 0,\n  value.parseJson().protocolSection.identificationModule.officialTitle.replace(\"\\n\", \"\\\\n\"),\n  value.parseJson().protocolSection.identificationModule.briefTitle.replace(\"\\n\", \"\\\\n\")\n)"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "study_json",
+    "expression": "grel:value.parseJson().protocolSection.statusModule.studyFirstPostDateStruct.date.substring(0, 4)",
+    "onError": "set-to-blank",
+    "newColumnName": "year",
+    "columnInsertIndex": 5,
+    "description": "Create column year at index 5 based on column study_json using expression grel:value.parseJson().protocolSection.statusModule.studyFirstPostDateStruct.date.substring(0, 4)"
+  },
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "baseColumnName": "study_json",
+    "expression": "grel:if (\n  coalesce(value.parseJson().protocolSection.descriptionModule.detailedDescription, \"\").length() > 0,\n  value.parseJson().protocolSection.descriptionModule.detailedDescription.replace(\"\\n\", \"\\\\n\"),\n  coalesce(value.parseJson().protocolSection.descriptionModule.briefSummary, \"\").replace(\"\\n\", \"\\\\n\")\n)",
+    "onError": "set-to-blank",
+    "newColumnName": "abstract",
+    "columnInsertIndex": 5,
+    "description": "Create column abstract at index 5 based on column study_json using expression grel:if (\n  coalesce(value.parseJson().protocolSection.descriptionModule.detailedDescription, \"\").length() > 0,\n  value.parseJson().protocolSection.descriptionModule.detailedDescription.replace(\"\\n\", \"\\\\n\"),\n  coalesce(value.parseJson().protocolSection.descriptionModule.briefSummary, \"\").replace(\"\\n\", \"\\\\n\")\n)"
+  }
+]
