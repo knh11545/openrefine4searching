@@ -244,9 +244,9 @@ The operation history JSON to be applied in OpenRefine:
 
 ### Search result
 
-Our search yields a JSON document with some general information about the search result and a chunk with the first records. It looks as if only 10 records at a time can be obtained from the API we are using here. If there are more than 10 records in the search result these have to be obtained by paging through the list. This we will do in the next section.
+Our search yields a JSON document with some general information about the search result and a chunk with the first records. It looks as if only 10 records at a time can be obtained from the API we are using here. If there are more than 10 records in the search result these have to be obtained by paging through the list. But we will follow a somewhat different approach to directly obtain RIS-formatted records. See the next section.
 
-First we extract the result count from the JSON. In addition, a field _search_status_ is present which we extract, too. The exact meaning of this status is not clear to me but we probabaly want that the status is "ok".
+But first we extract the result count from the JSON (_total_results_). In addition, a field _search_status_ is present which we extract, too. The exact meaning of this status is not clear to me but we probabaly want that the status is "ok".
 
 ```json
 
