@@ -1,6 +1,14 @@
 Search Guidelines International Network library
 ==============================================================================
 
+**STATUS: Currently broken!**
+
+**GIN changed their website. This broke the webscraping part of the wokflow documented here. I haven't figured out yet how to reliably locate the relevant data in the new HTML pages. Or whether this is possible at all.**
+
+GIN meanwhile added an RIS export option. But I found the data quality of the RIS to be poor.
+
+Follwing, the original version of this page:
+
 The [GIN international guideline library](https://g-i-n.net/international-guidelines-library/) and registry of guidelines in development has very limited search functions. The [documentation](https://g-i-n.net/wp-content/uploads/2021/09/Guide-to-GIN-library-and-registry-of-guidelines-in-development-September-2021-for-website.pdf) says "The library has been designed to use natural language; specifically, it does not use Boolean operators or wildcards." This is not ideal when many alternative terms must be searched as for systematic reviews or guideline development. For each of these terms a new search statement has to be entered. There is no search history. Search results can be added to a "Saved list" after registration. But this has to be done for every record individually and takes 3 clicks each time. I found no means to download records in a useful bibliographic format. Not for an individual record nor for a "Saved list" or a list of search results.
 
 
