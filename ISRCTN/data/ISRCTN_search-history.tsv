@@ -1,0 +1,4 @@
+query	result_count
+((nasal OR nose OR sinonasal) AND cancer) AND (surgery)	57
+((nasal OR nose OR sinonasal) AND cancer) AND (radiotherapy)	20
+((nasal OR nose OR sinonasal) AND cancer) AND (imaging)	24

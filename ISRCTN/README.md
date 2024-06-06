@@ -7,12 +7,12 @@ Length of the minimal useful base URL `https://www.isrctn.com/searchCsv?columns=
 
 But there is an [API](https://www.isrctn.com/api) that allows to search for registry entries. Records can be downloaded in several XML formats. For more information see [here](https://www.isrctn.com/page/faqs#finding-study-information) under "How do I download data from the ISRCTN registry?".
 
-Note: Springer Nature askeed me to register in order to get access to the API documentation. But the actual [download location](https://www.isrctn.com/editorial/retrieveFile/38def0ea-8330-4eab-b288-d21115c782f3/37855) seems to be unprotected. The API documentation was a Word file that contained the XML schemas of the various download formats in a kind of MS-Specific "OLE package". After some trial and error I was able to extract the packages. Turned out they were just plain XML schema files.
+Note: Springer Nature askeed me to register in order to get access to the API documentation. But the actual [download location](https://www.isrctn.com/editorial/retrieveFile/38def0ea-8330-4eab-b288-d21115c782f3/37855) seems to be unprotected. The API documentation was a Word file that contained the XML schemas of the various download formats in a kind of MS-Specific "OLE package". After some trial and error I was able to extract the packages. Turned out they were just plain XML schema files. These help in deciding how to extract information from the XML.
 
 
 ## Search terms
 
-Longer search strategies may need to be split into parts the search results of which can be combined with OR later. For a search strategy `Population AND Intervention` for example do the following. Create three serarate strategies:
+Longer search strategies may need to be split into parts the search results of which can be combined with `OR` later. For a search strategy `Population AND Intervention` for example do the following. Create three separate strategies:
 
 ```
 P AND I_chunk_1
@@ -20,7 +20,7 @@ P AND I_chunk_2
 P AND I_chunk_3
 ```
 
-I found it convenient to do this in an Excel file which each search block in a single cell. For _population_ and _intervention_ I used the more general terms _block\_1_ and _block\_2_: 
+I found it convenient to do this in an [Excel file](data/ISRCTN_prepared_search_strategy.xlsx) which each search block in a single cell. For _population_ and _intervention_ I used the more general terms _block\_1_ and _block\_2_: 
 
 | block\_1                              | block\_2 |
 | --------------------------------------- | ------------ |
@@ -28,13 +28,13 @@ I found it convenient to do this in an Excel file which each search block in a s
 | (nasal OR nose OR sinonasal) AND cancer | radiotherapy |
 | (nasal OR nose OR sinonasal) AND cancer | imaging      |
 
-This Excel file can be loaded into OpenRefine.
+This [Excel file](data/ISRCTN_prepared_search_strategy.xlsx) can be loaded into OpenRefine.
 
 
 
 ## Search using API
 
-Here we start out by combining the partial search statements _block\_1_ and _block\_2_ with a Boolean AND. Then we build the query and take care to [URL encode](https://en.wikipedia.org/wiki/URL_encoding) the query string. As this will increase the length of the URL, we also create a cloumn _url\_length_ that allows  to create a facet to check the length of the resulting URLs:
+Here we start out by combining the partial search statements _block\_1_ and _block\_2_ with a Boolean `AND`. Then we build the query and take care to [URL encode](https://en.wikipedia.org/wiki/URL_encoding) the query string. As this will increase the length of the URL, we also create a cloumn _url\_length_ that allows  to create a facet to check the length of the resulting URLs:
 
 ```json
 
@@ -212,10 +212,12 @@ Use the Custom Tabular Exporter to export to a tsv-file. Use the following optio
 
 ```
 
+[Here](data/ISRCTN_search-history.tsv) is the exported search history in TSV format.
+
 
 ## Extract record data
 
-First, we create a record of every guidline entry found.
+The guideline entries found are contained in a single XML document for each of our searches. First, we extract the list of entries and split it up so that each guideline entry is in a single line (column `xml_record`).
 
 ```json
 
@@ -234,12 +236,6 @@ First, we create a record of every guidline entry found.
     "description": "Create column xml_record at index 5 based on column xml_download using expression grel:value.parseXml().select(\"allTrials fullTrial\").join(\"|||\")"
   },
   {
-    "op": "core/column-move",
-    "columnName": "xml_record",
-    "index": 0,
-    "description": "Move column xml_record to position 0"
-  },
-  {
     "op": "core/multivalued-cell-split",
     "columnName": "xml_record",
     "keyColumnName": "xml_record",
@@ -252,7 +248,7 @@ First, we create a record of every guidline entry found.
 
 ```
 
-We extract some minimal data about the trials to be exported into a RIS file.
+Now we can extract some data about the trials. These data will be later exported to a RIS file. The data in the ISRCTN records does not fit well to those of bibliographic data. So we only retrieve as small number of fields.
 
 For the _year_ we use the _dateAssigned_ field of the trial.
 
@@ -349,12 +345,11 @@ For the _year_ we use the _dateAssigned_ field of the trial.
 
 ## Deduplication
 
-In the following steps we will deduplicate records and therefore delete some data. If a complete record of the data returned from searching the guideline register is wanted then now would be a good time to save an archive file of the OpenRefine project at the current state of the workflow. This file can be imported into OpenRefine for further reference.
+We may have overlapping search results from the individual searchs. I.e. a single guideline entry may ocuur more than once in our dataset.
 
+In the following steps we will deduplicate records and therefore delete some data.
 
-We are still in records mode with each search term being a record. Now we distill the data down to individual guidelines. This way we go from records mode to row mode.
-
-Then we deduplicate the guidelines along [this guide](https://guides.library.illinois.edu/openrefine/duplicates). A briefer documentation of this approach is found in the OpenRefine Recipes [here](https://github.com/OpenRefine/OpenRefine/wiki/Recipes#removing-duplicate-rows-when-exact-values-are-found-in-a-column). We use the `isrctn_id` column to deduplicate.
+We deduplicate the guidelines along [this guide](https://guides.library.illinois.edu/openrefine/duplicates). A briefer documentation of this approach is found in the OpenRefine Recipes [here](https://github.com/OpenRefine/OpenRefine/wiki/Recipes#removing-duplicate-rows-when-exact-values-are-found-in-a-column). We use the `isrctn_id` column to deduplicate.
 
 ```json
 
@@ -425,24 +420,23 @@ The total number of records found after deduplication within ISRCTN by ISRCTN tr
 
 ## Export of trial data
 
-We are finished altering the data in the OpenRefine project. So we export an archival copy of the project as described above.
+We are finished altering the data in the OpenRefine project. So we export an archival copy of the project. Use the menu _Export_ --> _OpenRefine project archive to file_.
 
 Now we can export the deduplicated guideline records.
 
 
 ### Export data to a RIS file using the Templating Export
 
-For RIS file format see [Wikipedia](https://en.wikipedia.org/wiki/RIS_(file_format))
+For a documentation of the RIS file format see [Wikipedia](https://en.wikipedia.org/wiki/RIS_(file_format))
 
-In the Templating Export form:
+In the _Templating Export_ form:
 
 * Prefix: empty.
 * Suffix: empty.
-* Row Separator: Make sure to have an empty line in the so that the records are separated.
+* Row Separator:  empty
 * Row Remplate:
 
 ```
-
 TY  - WEB
 TI  - {{cells["title"].value}}
 PY  - {{cells["year"].value}}
@@ -457,5 +451,9 @@ ER  -
 
 ```
 
-![Templating Export otions for RIS file format](media/ISRCTN/templating_export_RIS.png)
+Make sure to have an empty line in either the row template or the row separator so that the records are separated.
+
+![Templating Export otions for RIS file format](media/templating_export_RIS.png)
+
+[Here](data/ISRCTN_records.ris) is our exported search result in RIS format.
 
